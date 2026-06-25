@@ -403,10 +403,14 @@ async function syncPlaylist() {
     if (top10VideoIds.length > 0) {
       await updatePlaylist(youtube, playlistId, top10VideoIds);
 
-      // Save Top 10 Report to TXT file
+      // Save Top 10 Report to TXT file inside report_logs directory
       try {
+        const reportDir = path.join(__dirname, '../report_logs');
+        if (!fs.existsSync(reportDir)) {
+          fs.mkdirSync(reportDir, { recursive: true });
+        }
         const reportFileName = `sync_report_${dateString}.txt`;
-        const reportFilePath = path.join(__dirname, `../${reportFileName}`);
+        const reportFilePath = path.join(reportDir, reportFileName);
         let reportContent = `=== [YouTube Music Top 10 Playlist Sync Report - ${dateString}] ===\n`;
         reportContent += `Generated At (KST): ${new Date(kstDate.getTime()).toISOString().replace('T', ' ').substring(0, 19)}\n\n`;
 
