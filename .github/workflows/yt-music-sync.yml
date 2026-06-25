@@ -4,7 +4,7 @@ on:
   schedule:
     # 매주 일요일 00:00 UTC (한국 시간 오전 9:00)에 자동으로 시작됩니다.
     #- cron: '0 0 * * 0'
-    - cron: '15 * * * *'
+    - cron: '*/5 * * * *'
   workflow_dispatch: # 깃허브 콘솔에서 수동으로도 즉시 실행 가능합니다.
 
 jobs:
@@ -32,7 +32,8 @@ jobs:
           GOOGLE_REFRESH_TOKEN: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
           YOUTUBE_PLAYLIST_ID: ${{ secrets.YOUTUBE_PLAYLIST_ID }}
           TOPIC_CHANNEL_ID: ${{ secrets.TOPIC_CHANNEL_ID }}
-          FORCE_PLAYLIST_UPDATE: ${{ github.event_name == 'workflow_dispatch' && 'true' || 'false' }}
+          FORCE_PLAYLIST_UPDATE: 'true'
+          # FORCE_PLAYLIST_UPDATE: ${{ github.event_name == 'workflow_dispatch' && 'true' || 'false' }}
         run: node scripts/sync-playlist.js
 
       - name: Commit and Push CSV and TXT Report changes
