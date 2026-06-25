@@ -34,7 +34,7 @@ jobs:
           GOOGLE_REFRESH_TOKEN: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
           YOUTUBE_PLAYLIST_ID: ${{ secrets.YOUTUBE_PLAYLIST_ID }}
           TOPIC_CHANNEL_ID: ${{ secrets.TOPIC_CHANNEL_ID }}
-          FORCE_PLAYLIST_UPDATE: ${{ github.event_name == 'workflow_dispatch' && 'true' || 'false' }}
+          FORCE_PLAYLIST_UPDATE: true
         run: node scripts/sync-playlist.js
 
       - name: Commit and Push CSV and TXT Report changes
