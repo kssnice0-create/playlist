@@ -334,8 +334,7 @@ async function syncPlaylist() {
 
   // 7. Playlist sync: run if today is Friday (KST) or FORCE_PLAYLIST_UPDATE is configured
   const kstDate = new Date(new Date().getTime() + 9 * 60 * 60 * 1000);
-  // const isFriday = kstDate.getUTCDay() === 5; // Friday is 5
-  const isFriday = true;
+  const isFriday = kstDate.getUTCDay() === 5; // Friday is 5
   const isForceUpdate = process.env.FORCE_PLAYLIST_UPDATE === 'true';
 
   if (isFriday || isForceUpdate) {
@@ -403,6 +402,26 @@ async function syncPlaylist() {
 
     if (top10VideoIds.length > 0) {
       await updatePlaylist(youtube, playlistId, top10VideoIds);
+
+      // Save Top 10 Report to TXT file
+      try {
+        const reportFileName = `sync_report_${dateString}.txt`;
+        const reportFilePath = path.join(__dirname, `../${reportFileName}`);
+        let reportContent = `=== [YouTube Music Top 10 Playlist Sync Report - ${dateString}] ===\n`;
+        reportContent += `Generated At (KST): ${new Date(kstDate.getTime()).toISOString().replace('T', ' ').substring(0, 19)}\n\n`;
+
+        top10Tracks.forEach((item, index) => {
+          reportContent += `${index + 1}. ${item.title}\n`;
+          reportContent += `   - 늘어난 조회수 (지난 7일간): +${item.weeklyIncrease.toLocaleString()}회\n`;
+          reportContent += `   - 전체 조회수: ${item.totalViews.toLocaleString()}회\n`;
+          reportContent += `   - 비디오 ID: ${item.id}\n\n`;
+        });
+
+        fs.writeFileSync(reportFilePath, reportContent, 'utf8');
+        console.log(`[Success] Top 10 report successfully saved to ${reportFileName}`);
+      } catch (err) {
+        console.error('Failed to write Top 10 report text file:', err.message);
+      }
     } else {
       console.warn('No top tracks found to populate playlist.');
     }
