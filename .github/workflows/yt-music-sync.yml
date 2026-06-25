@@ -1,0 +1,30 @@
+name: YouTube Music Auto-Playlist Sync
+
+on:
+  schedule:
+    # 매주 일요일 00:00 UTC (한국 시간 오전 9:00)에 자동으로 시작됩니다.
+    - cron: '0 0 * * 0'
+  workflow_dispatch: # 깃허브 콘솔에서 수동으로도 즉시 실행 가능합니다.
+
+jobs:
+  sync_playlist:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Google APIs library
+        run: npm install googleapis
+
+      - name: Run Sync Script
+        env:
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          GOOGLE_REFRESH_TOKEN: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
+          YOUTUBE_PLAYLIST_ID: "PLe1hucaECxMU"
+        run: node scripts/sync-playlist.js
